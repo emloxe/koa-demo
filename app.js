@@ -1,21 +1,24 @@
 const Koa = require('koa');
 
-const static = require('koa-static'); // 静态资源
+const staticCache = require('koa-static-cache'); // 静态资源
 const compress = require('koa-compress'); // 压缩数据来提高传输速度
 const session = require('koa-session'); // 信息持久化存储，记录当前用户登入账号
-const { resolve } = require('path');
+const path = require('path');
 const portfinder = require('portfinder');
 const chalk = require('chalk');
 
 let basePort = 8080;
 const app = new Koa();
 
-app.use(static(__dirname)); // 当前目录作为静态资源目录
-app.use(static(resolve(__dirname, '../static'))); // 当前目录作为静态资源目录
+app.use(staticCache(__dirname)); // 当前目录作为静态资源目录
+app.use(staticCache(path.join(__dirname, './static'))); // 当前目录作为静态资源目录
+app.use(staticCache(path.join(__dirname, './static'), {
+  prefix: '/dist' // 指定目录添加路由前缀
+}));
 
 app.use(async (ctx, next) => {
-    console.log(`${ctx.request.method} ${ctx.request.url}`); // 打印URL
-    await next(); // 调用下一个middleware
+  console.log(`${ctx.request.method} ${ctx.request.url}`); // 打印URL
+  await next(); // 调用下一个middleware
 });
 
 const CONFIG = {
@@ -40,8 +43,6 @@ const CONFIG = {
 };
 
 app.use(session(CONFIG, app));
-
-
 
 // 开启端口监听
 portfinder.basePort = basePort;
