@@ -38,11 +38,7 @@ app.use(staticCache(path.join(__dirname, '../static'), {
   prefix: '/dist', // 指定目录添加路由前缀
 }));
 
-/**
- * csrf middleware
- * @see https://github.com/koajs/csrf
- */
-app.use(new CSRF());
+
 
 app.use(async (ctx, next) => {
   console.log(`${ctx.request.method} ${ctx.request.url}`); // 打印URL
@@ -75,6 +71,12 @@ const CONFIG = {
  * @see https://github.com/koajs/session
  */
 app.use(session(CONFIG, app));
+
+/**
+ * csrf middleware
+ * @see https://github.com/koajs/csrf
+ */
+app.use(new CSRF());
 
 /**
  * cors middleware 允许跨域
